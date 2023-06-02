@@ -4,7 +4,7 @@ import socket
 import threading
 
 # 配置网络参数
-HOST = '192.168.0.102'
+HOST = '192.168.0.104'
 PORT = 12345  # 替换为被控端的端口号
 
 # 配置音频参数
