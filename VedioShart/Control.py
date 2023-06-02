@@ -1,6 +1,7 @@
 import sounddevice as sd
 import numpy as np
 import socket
+import threading
 
 # 配置网络参数
 HOST = '192.168.0.102'
@@ -51,11 +52,30 @@ input_devices = get_input_devices()
 print_input_devices(input_devices)
 input_device_idx = select_input_device(input_devices)
 
-# 回调函数，用于接收音频数据并播放
-def callback(outdata, frames, time, status):
-    data = connection.recv(BLOCK_SIZE)
-    outdata[:] = np.frombuffer(data, dtype=np.int16).reshape((BLOCK_SIZE, CHANNELS))
+# 回调函数，用于接收音频数据并发送到被控端
+def callback(indata, frames, time, status):
+    data = indata.tobytes()
+    connection.sendall(data)
 
-# 开始音频播放和接收
-print("开始接收音频...")
-input_device_info = sd.query_devices()[input_device_idx]
+# 创建音频录制和发送的线程
+def audio_thread():
+    input_device_info = sd.query_devices()[input_device_idx]
+    stream = sd.InputStream(device=input_device_idx, channels=CHANNELS, samplerate=SAMPLE_RATE, callback=callback)
+    stream.start()
+
+    # 等待音频传输完成
+    while True:
+        pass
+
+    # 关闭连接
+    stream.stop()
+    connection.close()
+    sock.close()
+
+# 启动音频线程
+audio_thread = threading.Thread(target=audio_thread)
+audio_thread.start()
+
+# 主线程继续执行其他操作
+while True:
+    pass
