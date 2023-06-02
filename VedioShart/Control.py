@@ -1,36 +1,38 @@
+import sounddevice as sd
+import numpy as np
 import socket
-import pyaudio
+
+# 配置网络参数
+HOST = '192.168.0.102'
+PORT = 12345  # 替换为被控端的端口号
 
 # 配置音频参数
-FORMAT = pyaudio.paInt16
-CHANNELS = 1
-RATE = 44100
-CHUNK = 1024
+SAMPLE_RATE = 44100
+CHANNELS = 2
+BLOCK_SIZE = 1024
 
-# 创建套接字
+# 创建Socket连接
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server_address = ('192.168.0.102', 12345)  # 绑定本机IP地址和一个未被占用的端口号
+server_address = (HOST, PORT)
 sock.bind(server_address)
 sock.listen(1)
-
-# 初始化音频输出
-audio = pyaudio.PyAudio()
-stream = audio.open(format=FORMAT, channels=CHANNELS, rate=RATE, output=True, frames_per_buffer=CHUNK)
-
-print("等待连接...")
 connection, client_address = sock.accept()
-print("已连接:", client_address)
 
+# 回调函数，用于接收音频数据并播放
+def callback(outdata, frames, time, status):
+    data = connection.recv(BLOCK_SIZE)
+    outdata[:] = np.frombuffer(data, dtype=np.float32).reshape((BLOCK_SIZE, CHANNELS))
+
+# 开始音频播放和接收
 print("开始接收音频...")
+stream = sd.OutputStream(callback=callback, channels=CHANNELS, samplerate=SAMPLE_RATE, blocksize=BLOCK_SIZE)
+stream.start()
+
+# 等待音频传输完成
 while True:
-    data = connection.recv(CHUNK)
-    if not data:
-        break
-    stream.write(data)
+    pass
 
 # 关闭连接
-stream.stop_stream()
-stream.close()
-audio.terminate()
+stream.stop()
 connection.close()
 sock.close()
