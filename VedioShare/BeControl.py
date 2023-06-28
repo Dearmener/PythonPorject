@@ -47,12 +47,13 @@ def receive_audio(ip, port):
         p.terminate()
 
 # 请根据实际情况修改IP和端口
-sender_ip = "192.168.1.2"
-receiver_ip = "192.168.1.3"
+# 请根据实际情况修改IP和端口
+sender_ip = "192.168.0.102"
+receiver_ip = "192.168.0.102"
 port = 12345
 
 # 发送端电脑运行
 send_audio(sender_ip, port)
 
 # 接收端电脑运行
-receive_audio(receiver_ip, port)
+# receive_audio(receiver_ip, port)
