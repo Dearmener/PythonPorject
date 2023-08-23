@@ -15,7 +15,7 @@ print(f"10 == 15的结果是{num_1 == num_2}")
 name_1 = "itcast"
 name_2 = "itheima"
 print(f"结果为{name_1 == name_2}")
-
+name_3 = "guoqing"
 name_1 = "meng"
 name_2 = "meng"
 print(f"结果为{name_1 == name_2}")
