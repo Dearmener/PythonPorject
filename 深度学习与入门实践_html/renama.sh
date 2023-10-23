@@ -1,6 +1,6 @@
 #!/bin/bash
 
-for file in *.md; do
-    mv "$file" "${file%.md}.html"
+for file in *.html; do
+    mv "$file" "${file%}.md"
 done
 
